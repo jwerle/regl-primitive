@@ -2,7 +2,7 @@ regl-primitive
 ==============
 
 Create a [regl](https://github.com/regl-project/regl) draw command from a
-[simplicial complex](github.com/mikolalysenko/simplicial-complex).
+[simplicial complex](https://github.com/mikolalysenko/simplicial-complex).
 
 ## Example
 
