@@ -38,13 +38,15 @@ const drawBunny = primitive(regl, bunny, {
 })
 
 regl.frame(() => camera(() => drawBunny()))
-```
 
+```
 ## Installation
 
 ```sh
 $ npm install regl-primitive --save
 ```
+
+See [demo here](https://jwerle.github.io/regl-primitive/example/)
 
 ## API
 
