@@ -54,9 +54,9 @@ $ npm install regl-primitive --save
 
 where `regl-primitive` expects the following arguments:
 
-* `Function` regl - A handle to a regl instance
-* `Object` complex - An object exposing at least `positions` (See [simplicial-complex](https://github.com/mikolalysenko/simplicial-complex))
-* `(Object)?` configuration - An optional object that extends the
+* `regl` - A handle to a regl instance
+* `complex` - An object exposing at least `positions` (See [simplicial-complex](https://github.com/mikolalysenko/simplicial-complex))
+* `[configuration]` - An optional object that extends the
   initial state used to create a regl draw command
 
 ## License
