@@ -3,6 +3,8 @@
 /**
  * Module dependencies.
  */
+
+const normals = require('angle-normals')
 const isArray = Array.isArray
 
 /**
@@ -73,56 +75,18 @@ function createREGLPrimitive(regl, complex, configuration) {
     throw TypeExpectationError('complex.uvs', 'array', complex.uvs)
   }
 
-  /**
-   * Initial regl draw command state derived from
-   * optional input configuration.
-   */
+  // initial regl draw command state derived from
+  // optional input configuration
+  const state = Object.assign({attributes: {}}, configuration)
 
-  const state = Object.assign({
-    attributes: {},
-    uniforms: {}
-  }, configuration)
+  // derive normals if not given
+  if (null == complex.normals && complex.cells) {
+    complex.normals = normals(complex.cells, complex.positions)
+  }
 
-  /**
-   * Sets attribute on regl state if
-   * truthy.
-   */
-
+  // attribute setter helper
   function attribute(k, x) {
     if (x) { state.attributes[k] = x }
-  }
-
-  /**
-   * Sets uniform on regl state if
-   * truthy.
-   */
-
-  function uniform(k, x) {
-    if (x) { state.uniforms[k] = x }
-  }
-
-  /**
-   * Sets a state property.
-   */
-
-  function set(k, v) {
-    if (undefined !== v) {
-      if ('object' == typeof v && 'object' == typeof state[k]) {
-        Object.assign(state[k], v)
-      } else {
-        state[k] = v
-      }
-    }
-  }
-
-  /**
-   * Configures regl state.
-   */
-
-  function configure(k) {
-    if (configuration && configuration[k]) {
-      set(k, configuration[k])
-    }
   }
 
   // sets regl draw command attributes
@@ -130,10 +94,10 @@ function createREGLPrimitive(regl, complex, configuration) {
   attribute('normal', complex.normals)
   attribute('uv', complex.uvs)
 
-  // set regl draw command uniforms
-
   // configure regl draw command state
-  set('elements', complex.cells)
+  if (complex.cells) {
+    state.elements = complex.cells
+  }
 
   return regl(state)
 }

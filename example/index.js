@@ -5,8 +5,8 @@
  */
 
 const Primitive = require('../')
-const normals = require('angle-normals')
 const Camera = require('regl-camera')
+const teapot = require('teapot')
 const bunny = require('bunny')
 const clamp = require('clamp')
 const regl = require('multi-regl')()
@@ -21,8 +21,8 @@ const Cube = require('primitive-cube')
 // vertex shader
 const vert = `
 precision mediump float;
-uniform mat4 projection, view;
 attribute vec3 position, normal;
+uniform mat4 projection, view;
 varying vec3 vnormal;
 void main () {
   vnormal = normal;
@@ -42,14 +42,12 @@ void main () {
 // dom query helper
 const dom = (s) => document.querySelector(s)
 
-// regl camera position
-const position = [0, 0, 0]
-
 // regl contexts
 const context = {
   icosphere: regl(dom('#icosphere')),
   capsule: regl(dom('#capsule')),
   sphere: regl(dom('#sphere')),
+  teapot: regl(dom('#teapot')),
   torus: regl(dom('#torus')),
   bunny: regl(dom('#bunny')),
   cube: regl(dom('#cube')),
@@ -57,19 +55,21 @@ const context = {
 
 // one camera per context
 const cameras = {
-  icosphere: Camera(context.icosphere, {center: position, mouse: false, fov: Math.PI / 3}),
-  capsule: Camera(context.capsule, {center: position, mouse: false, fov: Math.PI / 3}),
-  sphere: Camera(context.sphere, {center: position, mouse: false, fov: Math.PI / 3}),
-  bunny: Camera(context.bunny, {center: [0, 2.5, 0], mouse: false, fov: Math.PI / 3}),
-  torus: Camera(context.torus, {center: position, mouse: false, fov: Math.PI / 3}),
-  cube: Camera(context.cube, {center: position, mouse: false, fov: Math.PI / 3}),
+  icosphere: Camera(context.icosphere, {mouse: false}),
+  capsule: Camera(context.capsule, {mouse: false}),
+  sphere: Camera(context.sphere, {mouse: false}),
+  teapot: Camera(context.teapot, {distance: 40, mouse: false}),
+  bunny: Camera(context.bunny, {center: [0, 2.5, 0], distance: 20, mouse: false}),
+  torus: Camera(context.torus, {mouse: false}),
+  cube: Camera(context.cube, {mouse: false}),
 }
 
 // geometry
 const geometry = {
   icosphere: Icosphere(),
   capsule: Capsule(),
-  sphere: Sphere(1, {segments: 16}),
+  sphere: Sphere(1),
+  teapot: teapot,
   torus: Torus(),
   bunny: bunny,
   cube: Cube(),
@@ -80,10 +80,9 @@ const primitives = {
   icosphere: Primitive(context.icosphere, geometry.icosphere, {vert, frag}),
   capsule: Primitive(context.capsule, geometry.capsule, {vert, frag}),
   sphere: Primitive(context.sphere, geometry.sphere, {vert, frag}),
+  teapot: Primitive(context.teapot, geometry.teapot, {vert, frag}),
   torus: Primitive(context.torus, geometry.torus, {vert, frag}),
-  bunny: Primitive(context.bunny, Object.assign(geometry.bunny, {
-    normals: normals(bunny.cells, bunny.positions)
-  }), {vert, frag}),
+  bunny: Primitive(context.bunny, geometry.bunny, {vert, frag}),
   cube: Primitive(context.cube, geometry.cube, {vert, frag}),
 }
 
@@ -91,7 +90,6 @@ const primitives = {
 Object.assign(window, {
   primitives,
   geometry,
-  position,
   cameras,
   context,
   dom,
@@ -106,10 +104,7 @@ for (let key in context) {
   // render loop !
   ctx.frame(({time}) => {
     ctx.clear({ color: [0, 0, 0, 0], depth: true })
-    camera({theta: (theta += camera.theta + 0.01)}, () => {
-      if ('function' == typeof primitive) {
-        primitive()
-      }
-    })
+    camera.theta += 0.01
+    camera({ ...camera }, () => { primitive() })
   })
 }
