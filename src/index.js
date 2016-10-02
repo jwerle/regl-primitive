@@ -7,28 +7,9 @@
 const normals = require('angle-normals')
 const isArray = Array.isArray
 
-/**
- * Predicate to determine if input x is
- * array like.
- *
- * @private
- * @param {Mixed} x
- * @return {Boolean}
- */
-
 function isArrayLike(x) {
   return isArray(x) || x.length
 }
-
-/**
- * Type expecation error helper.
- *
- * @private
- * @param {String} what
- * @param {String} type
- * @param {Mixed} input
- * @return {TypeError}
- */
 
 function TypeExpectationError(what, type, input) {
   return new TypeError('Expecting '+what+' to be a '+type+'. Got '+ typeof input)
@@ -92,11 +73,14 @@ function createREGLPrimitive(regl, complex, configuration) {
   // sets regl draw command attributes
   attribute('position', complex.positions)
   attribute('normal', complex.normals)
-  attribute('uv', complex.uvs)
+  attribute('uv', complex.uvs || complex.positions.map((v) => ([v[0], v[1]])))
 
-  // configure regl draw command state
-  if (complex.cells) {
+  if (complex.cells && complex.cells.length) {
     state.elements = complex.cells
+  }
+
+  if (null == state.count && null == state.elements) {
+    state.count = complex.positions.length
   }
 
   return regl(state)
