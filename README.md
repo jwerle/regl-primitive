@@ -4,6 +4,14 @@ regl-primitive
 Create a [regl](https://github.com/regl-project/regl) draw command from a
 [simplicial complex](https://github.com/mikolalysenko/simplicial-complex).
 
+## Installation
+
+```sh
+$ npm install regl-primitive --save
+```
+
+See [demo here](https://jwerle.github.io/regl-primitive/example/)
+
 ## Example
 
 ```js
@@ -38,15 +46,7 @@ const drawBunny = primitive(regl, bunny, {
 })
 
 regl.frame(() => camera(() => drawBunny()))
-
 ```
-## Installation
-
-```sh
-$ npm install regl-primitive --save
-```
-
-See [demo here](https://jwerle.github.io/regl-primitive/example/)
 
 ## API
 
